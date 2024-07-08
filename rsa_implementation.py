@@ -84,6 +84,6 @@ def crack():
 p_val, q_val, n_val, phi_n_val, e_val, d_val = generate_keys()
 report()
 # hardcode for now, make it input for later
-message = "language is mind control"
+message = "english is mind control"
 ciphertext = encrypt(message, e_val, n_val)
 print("encoded message:", ciphertext)
