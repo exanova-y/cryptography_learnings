@@ -8,10 +8,12 @@ import math
 # check if it's prime
 
 def is_prime(n):
-    if n < 2:
+    if n < 2: # is one.
         return False
+    elif n%2==0: # even numbers are not prime.
+        return False 
     # make sure this is int, not float
-    for i in range(2, int((n)**0.5)+1):
+    for i in range(3, int((n)**0.5)+1, 2):
         if n%i==0:
             return False
     return True
@@ -39,15 +41,25 @@ def mod_inv(public, phi_n_value):
     # get the first value 
     # the first k (scalar before phi_n) makes the term divisible by e will be used
 
+def extended_euclidean(a, b):
+    if a == 0:
+        return b, 0, 1
+    else:
+        gcd, x, y = extended_euclidean(b % a, a)
+        return gcd, y - (b // a) * x, x
 
 def generate_keys():
     print('prime number generation begins.')
-    p = generate_prime(1000, 5000)
-    q = generate_prime(1000, 5000)
+    p = generate_prime(10**8, 10**9)
+    q = generate_prime(10**8, 10**9) # small primes for poc. should be 
     while p == q:
         q = generate_prime(1000, 5000)
     print("begin computing n")
     n = p*q
+    bin_n = bin(n)[2:]
+    print("number bits of n:", len(bin_n))
+
+    # there is no efficient factorization algorithm.
     phi_n = (p-1)*(q-1) # euler's totient function
     print("begin generating public and private keys")
     e = random.randint(3, phi_n-1)
@@ -61,12 +73,12 @@ def generate_keys():
 
 def report():
     print("For the reader:")
-    print ("Prime number P: ", p_val)
+    print ("Prime number p: ", p_val)
     print ("Prime number q: ", q_val)
     print ("Public Key: ", e_val)
     print ("Private Key: ", d_val)
     print ("n: ", n_val)
-    print ("Phi of n: ", phi_n_val)
+    print ("phi(n): ", phi_n_val)
 
 
 # encryption
@@ -81,8 +93,10 @@ def encrypt(x_plaintext, e, n):
 
 # decryption
 def decrypt(y, d, n):
-    #y_ascii = []
-    pass
+    y_ascii = [pow(ch, d, n) for ch in y]
+    y_decoded = "".join([chr(ch) for ch in y_ascii]) # would return a list of individual letters
+    # pass it into join function, so items can be connected
+    return y_decoded
 
 
 def crack():
@@ -96,3 +110,4 @@ report()
 message = "english is mind control"
 ciphertext = encrypt(message, e_val, n_val)
 print("encoded message:", ciphertext)
+decrypt(ciphertext, d_val, n_val)
