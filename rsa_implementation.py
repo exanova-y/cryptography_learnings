@@ -1,4 +1,5 @@
 # rsa implementation
+# note
 import random
 import math
 
@@ -6,17 +7,22 @@ import math
 # key generation
 # check if it's prime
 
-def is_prime(number):
-    if number < 2:
+def is_prime(n):
+    if n < 2:
         return False
-    for i in range(2, ((number)**0.5)+1):
-        if number%i==0:
+    # make sure this is int, not float
+    for i in range(2, int((n)**0.5)+1):
+        if n%i==0:
             return False
     return True
 
 
 def generate_prime(min_val, max_val):
-    pass
+    n = random.randint(min_val, max_val)
+    while not is_prime(n):
+        n = random.randint(min_val, max_val)
+    return n
+        
 
 def mod_inv(public, phi_n_value):
     # need to find modular inverse
@@ -34,20 +40,23 @@ def mod_inv(public, phi_n_value):
     # the first k (scalar before phi_n) makes the term divisible by e will be used
 
 
-def generate_keys():    
-    p = generate_prime(10, 50)
-    q = generate_prime(10, 50)
+def generate_keys():
+    print('prime number generation begins.')
+    p = generate_prime(1000, 5000)
+    q = generate_prime(1000, 5000)
     while p == q:
-        q = generate_prime(10, 50)
+        q = generate_prime(1000, 5000)
+    print("begin computing n")
     n = p*q
     phi_n = (p-1)*(q-1) # euler's totient function
-    e = random.randint(1, phi_n-1)
+    print("begin generating public and private keys")
+    e = random.randint(3, phi_n-1)
     while math.gcd(e, phi_n) != 1:
         e = random.randint(3, phi_n-1)
         # generate private key
-        d = mod_inv(e, phi_n)
-        return p, q, n, phi_n, e, d
-    
+    d = mod_inv(e, phi_n) 
+    return p, q, n, phi_n, e, d
+    print("key generation complete.")
 
 
 def report():
@@ -62,6 +71,7 @@ def report():
 
 # encryption
 def encrypt(x_plaintext, e, n):
+    print("ascii-fying")
     # get ascii representation of a message
     x_ascii = [ord(c) for c in x_plaintext]
     # will look like: 100, 98, 100, etc etc in a list
@@ -73,7 +83,6 @@ def encrypt(x_plaintext, e, n):
 def decrypt(y, d, n):
     #y_ascii = []
     pass
-    
 
 
 def crack():
